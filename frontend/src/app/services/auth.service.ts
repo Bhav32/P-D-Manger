@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { API_CONFIG } from '../config/api.config';
 
 export interface AuthResponse {
   access_token: string;
@@ -22,45 +23,57 @@ export interface LoginCredentials {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8002/api/auth';
+  private apiUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.login}`;
   private tokenSubject = new BehaviorSubject<string | null>(this.getToken());
   public token$ = this.tokenSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
   login(credentials: LoginCredentials): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
+    const loginUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.login}`;
+    return this.http.post<AuthResponse>(loginUrl, credentials).pipe(
       tap(response => {
-        localStorage.setItem('token', response.access_token);
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('token', response.access_token);
+        }
         this.tokenSubject.next(response.access_token);
       })
     );
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/logout`, {}).pipe(
+    const logoutUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth.logout}`;
+    return this.http.post(logoutUrl, {}).pipe(
       tap(() => {
-        localStorage.removeItem('token');
+        if (typeof localStorage !== 'undefined') {
+          localStorage?.removeItem('token');
+        }
         this.tokenSubject.next(null);
       })
     );
   }
 
   getMe(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/me`);
+    return this.http.get(`${API_CONFIG.baseUrl}/auth/user`);
   }
 
   refresh(): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, {}).pipe(
+    return this.http.post<AuthResponse>(`${API_CONFIG.baseUrl}/auth/refresh`, {}).pipe(
       tap(response => {
-        localStorage.setItem('token', response.access_token);
+        if (typeof localStorage !== 'undefined') {
+          localStorage?.setItem('token', response.access_token);
+        }
         this.tokenSubject.next(response.access_token);
       })
     );
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    if (typeof localStorage !== 'undefined') {
+      const token = localStorage.getItem('token');
+      return token;
+    }
+    return null;
   }
 
   isAuthenticated(): boolean {

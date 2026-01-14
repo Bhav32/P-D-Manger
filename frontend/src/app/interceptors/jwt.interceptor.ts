@@ -1,12 +1,31 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
-  HttpInterceptor
+  HttpInterceptor,
+  HttpInterceptorFn
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+
+export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const token = authService.getToken();
+  
+  
+  if (token) {
+    req = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  } else {
+    console.log('JWT Interceptor - No token found');
+  }
+
+  return next(req);
+};
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
@@ -21,6 +40,8 @@ export class JwtInterceptor implements HttpInterceptor {
           Authorization: `Bearer ${token}`
         }
       });
+    } else {
+      console.log('JWT Interceptor (class) - No token found');
     }
 
     return next.handle(request);

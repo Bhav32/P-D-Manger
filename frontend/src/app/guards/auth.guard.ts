@@ -1,22 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthGuard {
-  constructor(private authService: AuthService, private router: Router) {}
-}
-
 export const authGuard: CanActivateFn = (route, state) => {
-  const authService = new AuthService(null as any);
+  const authService = inject(AuthService);
+  const router = inject(Router);
   
   if (authService.isAuthenticated()) {
     return true;
   }
   
-  // Redirect to login page
-  window.location.href = '/login';
+  router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
   return false;
 };
