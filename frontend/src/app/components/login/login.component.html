@@ -1,0 +1,63 @@
+<div class="login-container">
+  <div class="login-box">
+    <h2>P&D Manager Login</h2>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          formControlName="email"
+          type="email"
+          id="email"
+          class="form-control"
+          [class.is-invalid]="submitted && f['email'].errors"
+          placeholder="Enter your email"
+        />
+        <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+          <span *ngIf="f['email'].errors['required']">Email is required</span>
+          <span *ngIf="f['email'].errors['email']">Email must be valid</span>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          formControlName="password"
+          type="password"
+          id="password"
+          class="form-control"
+          [class.is-invalid]="submitted && f['password'].errors"
+          placeholder="Enter your password"
+        />
+        <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+          <span *ngIf="f['password'].errors['required']">Password is required</span>
+          <span *ngIf="f['password'].errors['minlength']">Password must be at least 6 characters</span>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="btn btn-primary btn-block"
+        [disabled]="loading"
+      >
+        <span *ngIf="loading" class="spinner"></span>
+        {{ loading ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+
+    <!-- Demo Credentials -->
+    <div class="demo-credentials">
+      <p><strong>Demo Credentials:</strong></p>
+      <p>Email: admin&#64;example.com</p>
+      <p>Password: password</p>
+    </div>
+  </div>
+</div>
