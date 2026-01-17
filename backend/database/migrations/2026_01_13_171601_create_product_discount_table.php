@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('discount_id');
-            $table->timestamps();
-            $table->softDeletes();
             
             $table->foreign('product_id')
                 ->references('id')

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->enum('type', ['percentage', 'fixed']);
             $table->decimal('value', 10, 2);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

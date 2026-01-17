@@ -72,6 +72,14 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  goToProducts(): void {
+    this.router.navigate(['/products']);
+  }
+
+  goToDiscounts(): void {
+    this.router.navigate(['/discounts']);
+  }
+
   getProfileInitial(user: User): string {
     // Generate an avatar with initials using an avatar service
     const initials = user.name

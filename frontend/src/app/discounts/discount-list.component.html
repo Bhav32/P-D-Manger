@@ -1,0 +1,148 @@
+<div class="discount-list-container">
+	<div class="header-row">
+		<h1>Discounts Management
+			<button class="dashboard-btn" routerLink="/dashboard">
+				<span class="material-icons">dashboard</span> Dashboard
+			</button>
+		</h1>
+		<button class="add-btn" (click)="goToCreate()">
+			+ Add New Discount
+		</button>
+	</div>
+
+	<div class="search-filter-row">
+		<input 
+			type="text" 
+			class="search-input" 
+			[(ngModel)]="search" 
+			(keyup.enter)="onSearch()"
+			placeholder="Search discounts..."
+		/>
+		
+		<div class="filter-controls">
+			<select class="filter-select" [(ngModel)]="filterType" (change)="onFilterTypeChange()">
+				<option *ngFor="let opt of typeOptions" [value]="opt.value">
+					{{ opt.label }}
+				</option>
+			</select>
+
+			<div class="sort-group">
+				<select class="filter-select" [(ngModel)]="sortBy" (change)="onSortChange()">
+					<option *ngFor="let opt of sortOptions" [value]="opt.value">
+						{{ opt.label }}
+					</option>
+				</select>
+				<button class="sort-order-btn" (click)="onToggleSortOrder()" [class.ascending]="sortOrder === 'asc'">
+					<span class="material-icons">{{ sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="discounts-grid" *ngIf="!loading; else loadingTpl">
+		<div *ngIf="paginatedDiscounts.length === 0" class="no-discounts">
+			<p>No discounts found. Try adjusting your filters.</p>
+		</div>
+
+		<div *ngFor="let discount of paginatedDiscounts" class="discount-card">
+			<div class="card-header">
+				<div class="discount-title-section">
+					<h3 class="discount-title">{{ discount.title }}</h3>
+					<div class="discount-badge-group">
+						<span class="discount-value" [ngClass]="discount.type === 'percentage' ? 'percentage' : 'fixed'">
+							{{ formatDiscountValue(discount) }}
+						</span>
+						<span class="status-badge" [ngClass]="getStatusClass(discount)">
+							{{ getStatusText(discount) }}
+						</span>
+					</div>
+				</div>
+				<div class="card-actions">
+					<button class="action-btn view-btn" (click)="goToView(discount)" title="View">
+						<span class="material-icons">visibility</span>
+					</button>
+					<button class="action-btn edit-btn" (click)="goToEdit(discount)" title="Edit">
+						<span class="material-icons">edit</span>
+					</button>
+					<button class="action-btn delete-btn" (click)="deleteDiscount(discount)" title="Delete">
+						<span class="material-icons">delete</span>
+					</button>
+				</div>
+			</div>
+
+			<div class="card-body">
+				<p class="discount-description">{{ getDiscountDescription(discount) }}</p>
+				
+				<div class="card-meta">
+					<div class="meta-item">
+						<span class="meta-label">PRODUCTS:</span>
+						<span class="meta-value">{{ getProductCount(discount) }}</span>
+					</div>
+					<div class="meta-item">
+						<span class="meta-label">CREATED:</span>
+						<span class="meta-value">{{ formatDate(discount.created_at) }}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<ng-template #loadingTpl>
+		<div class="loading-spinner">
+			<span class="material-icons spinner">autorenew</span>
+			<span>Loading discounts...</span>
+		</div>
+	</ng-template>
+
+	<!-- Pagination -->
+	<div class="pagination-controls" *ngIf="totalPages > 1 && !loading">
+		<button class="page-btn" (click)="previousPage()" [disabled]="pageIndex === 0">
+			<span class="material-icons">chevron_left</span> Previous
+		</button>
+
+		<div class="page-numbers">
+			<button 
+				*ngFor="let i of [].constructor(totalPages); let idx = index"
+				class="page-number"
+				[class.active]="pageIndex === idx"
+				(click)="goToPage(idx)"
+			>
+				{{ idx + 1 }}
+			</button>
+		</div>
+
+		<button class="page-btn" (click)="nextPage()" [disabled]="pageIndex === totalPages - 1">
+			Next <span class="material-icons">chevron_right</span>
+		</button>
+	</div>
+
+	<!-- Delete Modal -->
+	<div class="modal-overlay" *ngIf="showDeleteModal" (click)="cancelDelete()">
+		<div class="modal-content" (click)="$event.stopPropagation()">
+			<div class="modal-header">
+				<h2>Delete Discount</h2>
+				<button class="close-btn" (click)="cancelDelete()">
+					<span class="material-icons">close</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p>Are you sure you want to delete <strong>{{ discountToDelete?.title }}</strong>?</p>
+				<p class="warning-text">This action cannot be undone.</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+				<button class="btn-delete" (click)="confirmDelete()" [disabled]="isDeleting">
+					<span *ngIf="!isDeleting">Delete Discount</span>
+					<span *ngIf="isDeleting" class="spinner-small">
+						<span class="material-icons">autorenew</span> Deleting...
+					</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Success Toast -->
+	<div class="success-toast" *ngIf="showSuccessMessage">
+		{{ successMessage }}
+	</div>
+</div>
