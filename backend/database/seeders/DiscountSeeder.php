@@ -12,7 +12,6 @@ class DiscountSeeder extends Seeder
      */
     public function run(): void
     {
-        // New Year Sale - 35% off
         Discount::create([
             'title' => 'New year sale',
             'type' => 'percentage',
@@ -20,7 +19,6 @@ class DiscountSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Black Friday - 25% off
         Discount::create([
             'title' => 'Black Friday Sale',
             'type' => 'percentage',
@@ -28,7 +26,6 @@ class DiscountSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // New Customer Discount - 15% off
         Discount::create([
             'title' => 'New Customer Discount',
             'type' => 'percentage',
@@ -36,7 +33,6 @@ class DiscountSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Bulk Purchase Discount - ₹150 fixed
         Discount::create([
             'title' => 'Bulk Purchase Discount',
             'type' => 'fixed',
@@ -44,7 +40,6 @@ class DiscountSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Student Discount - 10% off
         Discount::create([
             'title' => 'Student Discount',
             'type' => 'percentage',
