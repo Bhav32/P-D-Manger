@@ -163,30 +163,4 @@ class DiscountController extends Controller
         ]);
     }
 
-    /**
-     * Get all active discounts.
-     */
-    public function active(): JsonResponse
-    {
-        $discounts = Discount::where('is_active', true)->with('products')->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $discounts
-        ]);
-    }
-
-    /**
-     * Get discounts for a specific product.
-     */
-    public function forProduct($productId): JsonResponse
-    {
-        $product = Product::findOrFail($productId);
-        $discounts = $product->discounts()->where('is_active', true)->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $discounts
-        ]);
-    }
 }

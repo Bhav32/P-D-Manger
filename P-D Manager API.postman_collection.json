@@ -1,0 +1,1179 @@
+{
+	"info": {
+		"_postman_id": "e1580eef-b03b-41d5-a879-9b11e15aa2c4",
+		"name": "P-D Manager API",
+		"description": "API for Products & Discounts Manager (Laravel backend)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48413404",
+		"_collection_link": "https://bhavika-jain-9710790.postman.co/workspace/Bhavika-Jain's-Workspace~28091672-29d5-44f0-8c44-976d80ebb0b2/collection/48413404-e1580eef-b03b-41d5-a879-9b11e15aa2c4?action=share&source=collection_link&creator=48413404"
+	},
+	"item": [
+		{
+			"name": "login",
+			"item": [
+				{
+					"name": "Login user and return JWT token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"string\",\n  \"password\": \"string\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"success\": true,\n  \"message\": \"string\",\n  \"data\": {\n    \"user\": {\n      \"id\": 2503,\n      \"name\": \"string\",\n      \"email\": \"string\"\n    },\n    \"token\": \"string\"\n  }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "logout",
+			"item": [
+				{
+					"name": "Logout (invalidate token)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Logged out",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer <token>",
+										"description": "Added as a part of security scheme: bearer"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/logout",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"success\": true,\n  \"message\": \"string\",\n  \"data\": {}\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Get authenticated user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzY3ODE2MTg1LCJleHAiOjE3Njc4MTk3ODUsIm5iZiI6MTc2NzgxNjE4NSwianRpIjoiN09uTDlqeVpmNHBkZGNFZyIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.WxMTgZxDh14fKpLBfm-jR-hOsGgXWEKRF-MpALP_1lA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"user"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Current user",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer <token>",
+										"description": "Added as a part of security scheme: bearer"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/user",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"success\": true,\n  \"message\": \"string\",\n  \"data\": {\n    \"user\": {\n      \"id\": 2503,\n      \"name\": \"string\",\n      \"email\": \"string\"\n    },\n    \"token\": \"string\"\n  }\n}"
+						},
+						{
+							"name": "Unauthenticated",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer <token>",
+										"description": "Added as a part of security scheme: bearer"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/user",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"user"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "products",
+			"item": [
+				{
+					"name": "{id}",
+					"item": [
+						{
+							"name": "Get single product with discounts and calculated prices",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{bearer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzY3ODE2MTg1LCJleHAiOjE3Njc4MTk3ODUsIm5iZiI6MTc2NzgxNjE4NSwianRpIjoiN09uTDlqeVpmNHBkZGNFZyIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.WxMTgZxDh14fKpLBfm-jR-hOsGgXWEKRF-MpALP_1lA",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/products/2",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"2"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Product",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/products/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"products",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"id\": 7605,\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"price\": 2801.4236615923683,\n  \"formatted_price\": \"string\",\n  \"final_price\": 6933.095303520143,\n  \"formatted_final_price\": \"string\",\n  \"discount_amount\": 743.8475250639742,\n  \"formatted_discount_amount\": \"string\",\n  \"discounts\": [\n    {\n      \"id\": 876,\n      \"title\": \"string\",\n      \"type\": \"fixed\",\n      \"value\": 8174.04084792015,\n      \"formatted_value\": \"string\",\n      \"description\": \"string\"\n    },\n    {\n      \"id\": 4819,\n      \"title\": \"string\",\n      \"type\": \"fixed\",\n      \"value\": 1062.300220952066,\n      \"formatted_value\": \"string\",\n      \"description\": \"string\"\n    }\n  ]\n}"
+								}
+							]
+						},
+						{
+							"name": "Update product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{bearer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"JBL Speakers\",\n  \"description\": \"JBL Go Essential Portable Waterproof Speaker\",\n  \"price\": 1999,\n  \"discount_ids\": [\n    1\n  ]\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/products/15",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"15"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Product updated",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer <token>",
+												"description": "Added as a part of security scheme: bearer"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"price\": 2987.6450468052562,\n  \"discount_ids\": [\n    719,\n    1874\n  ]\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/products/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"products",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"success\": true,\n  \"message\": \"string\",\n  \"data\": {}\n}"
+								}
+							]
+						},
+						{
+							"name": "Soft delete product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{bearer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/products/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"1"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Deleted",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer <token>",
+												"description": "Added as a part of security scheme: bearer"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/products/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"products",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"success\": true,\n  \"message\": \"string\",\n  \"data\": {}\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "List products with pagination, search, and sorting",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzY3ODEzOTM3LCJleHAiOjE3Njc4MTc1MzcsIm5iZiI6MTc2NzgxMzkzNywianRpIjoiM1c1RG5FbXRleThxRWMwUSIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.i8BKGbUOLQYyhwobKG3xv1Az-ZNNO1YOLkQeDF-m7Pc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products?page=1&per_page=10&sort_by=name&sort_direction=asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "10"
+								},
+								{
+									"key": "sort_by",
+									"value": "name"
+								},
+								{
+									"key": "sort_direction",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Paginated list of products",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/products?page=9968&per_page=9968&search=string&sort_by=price&sort_direction=asc",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "9968"
+										},
+										{
+											"key": "per_page",
+											"value": "9968"
+										},
+										{
+											"key": "search",
+											"value": "string"
+										},
+										{
+											"key": "sort_by",
+											"value": "price"
+										},
+										{
+											"key": "sort_direction",
+											"value": "asc"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"success\": false,\n  \"data\": {\n    \"current_page\": 7744,\n    \"last_page\": 9376,\n    \"per_page\": 3310,\n    \"total\": 5523,\n    \"data\": [\n      {\n        \"id\": 878,\n        \"name\": \"string\",\n        \"description\": \"string\",\n        \"price\": 1700.9014679828006,\n        \"formatted_price\": \"string\",\n        \"final_price\": 6922.225465877925,\n        \"formatted_final_price\": \"string\",\n        \"discount_amount\": 3233.6648779305465,\n        \"formatted_discount_amount\": \"string\",\n        \"discounts\": [\n          {\n            \"id\": 8463,\n            \"title\": \"string\",\n            \"type\": \"percentage\",\n            \"value\": 8876.398129886378,\n            \"formatted_value\": \"string\",\n            \"description\": \"string\"\n          },\n          {\n            \"id\": 6196,\n            \"title\": \"string\",\n            \"type\": \"percentage\",\n            \"value\": 1245.8769822755244,\n            \"formatted_value\": \"string\",\n            \"description\": \"string\"\n          }\n        ]\n      },\n      {\n        \"id\": 387,\n        \"name\": \"string\",\n        \"description\": \"string\",\n        \"price\": 6417.652645780389,\n        \"formatted_price\": \"string\",\n        \"final_price\": 1797.5324645417868,\n        \"formatted_final_price\": \"string\",\n        \"discount_amount\": 9761.646102316432,\n        \"formatted_discount_amount\": \"string\",\n        \"discounts\": [\n          {\n            \"id\": 1278,\n            \"title\": \"string\",\n            \"type\": \"percentage\",\n            \"value\": 8038.2501001030305,\n            \"formatted_value\": \"string\",\n            \"description\": \"string\"\n          },\n          {\n            \"id\": 860,\n            \"title\": \"string\",\n            \"type\": \"percentage\",\n            \"value\": 3502.995384738252,\n            \"formatted_value\": \"string\",\n            \"description\": \"string\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create a product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"JBL Speakers\",\n  \"description\": \"JBL Go Essential Portable Waterproof Speaker\",\n  \"price\": 2500,\n  \"discount_ids\": [\n    1\n  ]\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Product created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer <token>",
+										"description": "Added as a part of security scheme: bearer"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"price\": 2987.6450468052562,\n  \"discount_ids\": [\n    719,\n    1874\n  ]\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/products",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"success\": true,\n  \"message\": \"string\",\n  \"data\": {}\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "discounts",
+			"item": [
+				{
+					"name": "{id}",
+					"item": [
+						{
+							"name": "Get discount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{bearer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/discounts/2",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"discounts",
+										"2"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Discount found",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/discounts/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"discounts",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"id\": 4129,\n  \"title\": \"string\",\n  \"type\": \"fixed\",\n  \"value\": 2466.191609382198,\n  \"formatted_value\": \"string\",\n  \"description\": \"string\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Delete discount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{bearer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/discounts/8",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"discounts",
+										"8"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Discount deleted",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer <token>",
+												"description": "Added as a part of security scheme: bearer"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/discounts/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"discounts",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"success\": true,\n  \"message\": \"string\",\n  \"data\": {}\n}"
+								}
+							]
+						},
+						{
+							"name": "Update discount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{bearer_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer <eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDMvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE3Njg3NDY4NDgsImV4cCI6MTc2ODc1MDQ0OCwibmJmIjoxNzY4NzQ2ODQ4LCJqdGkiOiJKWVR3UXlhaFdENzZHUXhUIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.hj2CjqVroOtMzecHvy08BEsy16iP1JNqX7ndN2wjlrc>",
+										"description": "Added as a part of security scheme: bearer"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Black Friday Sale\",\n  \"type\": \"percentage\",\n  \"value\": 22\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/discounts/2",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"discounts",
+										"2"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "List discounts with pagination",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/discounts?page=1&per_page=12&sort_by=created_at&sort_direction=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"discounts"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "12"
+								},
+								{
+									"key": "sort_by",
+									"value": "created_at"
+								},
+								{
+									"key": "sort_direction",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Discounts list",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/discounts?page=1&per_page=5",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"discounts"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "per_page",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"success\": true,\n  \"data\": {\n    \"data\": [\n      {\n        \"id\": 7073,\n        \"title\": \"string\",\n        \"type\": \"percentage\",\n        \"value\": 7018.53121407326,\n        \"formatted_value\": \"string\",\n        \"description\": \"string\"\n      },\n      {\n        \"id\": 707,\n        \"title\": \"string\",\n        \"type\": \"percentage\",\n        \"value\": 8558.29177441556,\n        \"formatted_value\": \"string\",\n        \"description\": \"string\"\n      }\n    ]\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create discount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bearer_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Diwali Bumper offer\",\n  \"type\": \"percentage\",\n  \"value\": 45\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/discounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"discounts"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Discount created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer <token>",
+										"description": "Added as a part of security scheme: bearer"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"string\",\n  \"type\": \"percentage\",\n  \"value\": 513.2329832301319\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/discounts",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"discounts"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"success\": true,\n  \"message\": \"string\",\n  \"data\": {}\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://127.0.0.1:8000/api"
+		},
+		{
+			"key": "bearer_token",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

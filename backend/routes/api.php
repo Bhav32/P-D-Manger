@@ -34,7 +34,5 @@ Route::middleware('auth:api')->group(function () {
     
     // Discounts API
     Route::apiResource('discounts', DiscountController::class);
-    Route::get('/discounts/active', [DiscountController::class, 'active']);
-    Route::get('/products/{productId}/discounts', [DiscountController::class, 'forProduct']);
 });
 
