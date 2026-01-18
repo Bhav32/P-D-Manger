@@ -1,0 +1,86 @@
+<div class="product-view-container">
+  <div class="header-section">
+    <button class="back-btn" (click)="goBack()">
+      <span class="material-icons">arrow_back</span>
+      Back to Products
+    </button>
+    <button class="edit-btn" *ngIf="product" (click)="goToEdit(product.id)">
+      <span class="material-icons">edit</span>
+      Edit Product
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">
+    <span class="material-icons spinner">autorenew</span>
+    <span>Loading product details...</span>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <span class="material-icons">error_outline</span>
+    {{ error }}
+  </div>
+
+  <div *ngIf="product && !loading" class="product-details-card">
+    <div class="product-header">
+      <h1>{{ product.name }}</h1>
+      <p class="product-id">Product ID: #{{ product.id }}</p>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-section">
+        <h3>Description</h3>
+        <p class="description">{{ product.description }}</p>
+      </div>
+
+      <div class="pricing-section">
+        <div class="price-card">
+          <div class="price-item">
+            <label>Original Price</label>
+            <span class="original-price">₹{{ product.price | number:'1.2-2' }}</span>
+          </div>
+          
+          <div class="price-item" *ngIf="getSavings() !== null">
+            <label>Savings</label>
+            <span class="savings">
+              - ₹{{ getSavings() | number:'1.2-2' }}
+              <span class="percentage">({{ getSavingsPercentage() | number:'1.0-0' }}%)</span>
+            </span>
+          </div>
+
+          <div class="price-item final-price">
+            <label>Final Price</label>
+            <span class="price-value">₹{{ getFinalPrice() | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="discounts-section" *ngIf="product.discounts && product.discounts.length > 0">
+        <h3>Applied Discounts</h3>
+        <div class="discounts-list">
+          <div *ngFor="let discount of product.discounts" class="discount-item">
+            <span class="discount-title">{{ discount.title }}</span>
+            <span class="discount-value">
+              <span *ngIf="discount.type === 'percentage'" class="badge percentage-badge">
+                {{ discount.value }}%
+              </span>
+              <span *ngIf="discount.type === 'fixed'" class="badge fixed-badge">
+                ₹{{ discount.value }}
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-section">
+        <div class="meta-item">
+          <label>Created At</label>
+          <span>{{ product.created_at | date:'medium' }}</span>
+        </div>
+        <div class="meta-item" *ngIf="product.updated_at">
+          <label>Updated At</label>
+          <span>{{ product.updated_at | date:'medium' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

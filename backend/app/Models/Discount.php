@@ -14,10 +14,12 @@ class Discount extends Model
         'title',
         'type',
         'value',
+        'is_active',
     ];
 
     protected $casts = [
         'value' => 'decimal:2',
+        'is_active' => 'boolean',
     ];
 
     /**

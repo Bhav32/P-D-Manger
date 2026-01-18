@@ -1,0 +1,161 @@
+<div class="product-form-container">
+	<div class="form-header">
+		<h1>{{ isEditMode ? 'Edit Product' : 'Create New Product' }}</h1>
+		<button class="back-btn" (click)="goBack()">
+			<span class="material-icons">arrow_back</span>
+		</button>
+	</div>
+
+	<div class="form-card">
+		<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+			<!-- Basic Information Section -->
+			<div class="form-section">
+				<h2>Basic Information</h2>
+				
+				<div class="form-group">
+					<label for="name">Product Name *</label>
+					<input 
+						type="text" 
+						id="name" 
+						formControlName="name"
+						placeholder="Enter product name"
+						class="form-input"
+					/>
+					<span class="error-message" *ngIf="isFieldInvalid('name')">
+						{{ getErrorMessage('name') }}
+					</span>
+				</div>
+
+				<div class="form-group">
+					<label for="description">Description</label>
+					<textarea 
+						id="description" 
+						formControlName="description"
+						placeholder="Enter product description"
+						class="form-textarea"
+						rows="4"
+					></textarea>
+				</div>
+
+				<div class="form-row">
+					<div class="form-group">
+						<label for="price">Original Price *</label>
+						<input 
+							type="number" 
+							id="price" 
+							formControlName="price"
+							placeholder="0.00"
+							step="0.01"
+							class="form-input"
+						/>
+						<span class="error-message" *ngIf="isFieldInvalid('price')">
+							{{ getErrorMessage('price') }}
+						</span>
+					</div>
+
+					<div class="form-group" *ngIf="isEditMode">
+						<label for="final_price">Final Price</label>
+						<input 
+							type="number" 
+							id="final_price" 
+							formControlName="final_price"
+							placeholder="0.00"
+							step="0.01"
+							class="form-input"
+							readonly
+						/>
+						<small>Auto-calculated based on discounts</small>
+					</div>
+				</div>
+			</div>
+
+			<!-- Discounts Section -->
+			<div class="form-section">
+				<div class="section-header">
+					<h2>Associated Discounts</h2>
+					<button type="button" class="add-btn" (click)="addDiscount()">
+						+ Add Discount
+					</button>
+				</div>
+
+				<div formArrayName="discounts" class="discounts-list">
+					<div *ngIf="discounts.length === 0" class="no-items">
+						<p>No discounts associated. Add one to apply special pricing.</p>
+					</div>
+
+					<div *ngFor="let discount of discounts.controls; let idx = index" class="discount-item">
+						<div [formGroupName]="idx" class="discount-form">
+							<div class="discount-header">
+								<span class="discount-title">Discount {{ idx + 1 }}</span>
+								<button 
+									type="button" 
+									class="remove-btn"
+									(click)="removeDiscount(idx)"
+								>
+									<span class="material-icons">delete</span>
+								</button>
+							</div>
+
+					<div class="form-row">
+								<div class="form-group">
+									<label>Discount Name</label>
+									<select 
+										formControlName="id"
+										class="form-input"
+									>
+										<option value="">-- Select a Discount --</option>
+										<option *ngFor="let discount of availableDiscounts" [value]="discount.id">
+											{{ discount.title }}
+										</option>
+									</select>
+								</div>
+
+								<div class="form-group">
+									<label>Type</label>
+									<input 
+										type="text" 
+										formControlName="type"
+										class="form-input"
+										readonly
+										placeholder="Type (auto-filled)"
+									/>
+								</div>
+
+								<div class="form-group">
+									<label>Value</label>
+									<input 
+										type="text" 
+										formControlName="value"
+										class="form-input"
+										readonly
+										placeholder="Value (auto-filled)"
+									/>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Form Actions -->
+			<div class="form-actions">
+				<button type="button" class="cancel-btn" (click)="goBack()">
+					Cancel
+				</button>
+				<button type="submit" class="submit-btn" [disabled]="!productForm.valid || isSubmitting">
+					<span *ngIf="!isSubmitting">
+						{{ isEditMode ? 'Update Product' : 'Create Product' }}
+					</span>
+					<span *ngIf="isSubmitting" class="spinner">
+						<span class="material-icons">autorenew</span>
+						Saving...
+					</span>
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="success-toast" *ngIf="showSuccessMessage">
+	{{ successMessage }}
+</div>

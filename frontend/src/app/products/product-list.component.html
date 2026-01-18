@@ -1,0 +1,151 @@
+<div class="product-list-container">
+	<div class="header-row">
+		<h1>Products
+			<button class="dashboard-btn" routerLink="/dashboard">
+				<span class="material-icons">dashboard</span> Dashboard
+			</button>
+		</h1>
+		<button class="create-btn" (click)="goToCreate()">
+			+ Create Product
+		</button>
+	</div>
+
+	<div class="search-card">
+		<input class="search-input" [(ngModel)]="search" (keyup.enter)="onSearch()" placeholder="Search products..." />
+		<button class="search-btn" (click)="onSearch()">Search</button>
+	</div>
+
+	<div class="controls-row">
+		<div class="sort-controls">
+			<label>Sort By:</label>
+			<select [(ngModel)]="sortField" (change)="onSortFieldChange(sortField)">
+				<option *ngFor="let opt of sortOptions" [value]="opt.value">{{ opt.label }}</option>
+			</select>
+		</div>
+		<div class="page-size-controls">
+			<label>Per Page:</label>
+			<select [(ngModel)]="pageSize" (change)="onPage({ pageIndex: 0, pageSize: pageSize, length: total })">
+				<option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="table-wrapper" *ngIf="!loading; else loadingTpl">
+		<table class="product-table">
+			<thead>
+				<tr>
+					<th class="sortable" (click)="onSortFieldChange('name')" [class.sorted]="sortField === 'name'">
+						Name
+						<span class="sort-icon" *ngIf="sortField === 'name'">
+							{{ sortDirection === 'asc' ? '▲' : '▼' }}
+						</span>
+					</th>
+					<th>Description</th>
+					<th class="sortable" (click)="onSortFieldChange('price')" [class.sorted]="sortField === 'price'">
+						Original Price
+						<span class="sort-icon" *ngIf="sortField === 'original_price'">
+							{{ sortDirection === 'asc' ? '▲' : '▼' }}
+						</span>
+					</th>
+					<th class="sortable" (click)="onSortFieldChange('final_price')" [class.sorted]="sortField === 'final_price'">
+						Final Price
+						<span class="sort-icon" *ngIf="sortField === 'final_price'">
+							{{ sortDirection === 'asc' ? '▲' : '▼' }}
+						</span>
+					</th>
+					<th class="sortable" (click)="onSortFieldChange('savings')" [class.sorted]="sortField === 'savings'">
+						Savings
+						<span class="sort-icon" *ngIf="sortField === 'savings'">
+							{{ sortDirection === 'asc' ? '▲' : '▼' }}
+						</span>
+					</th>
+					<th>Discounts</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let product of products">
+					<td><b>{{ product.name }}</b></td>
+					<td>{{ product.description }}</td>
+					<td><span class="original-price">₹{{ product.price | number:'1.2-2' }}</span></td>
+					<td><span class="final-price">₹{{ getFinalPrice(product) | number:'1.2-2' }}</span></td>
+					<td class="savings_column">
+						<ng-container *ngIf="getSavings(product) !== null; else noSavings">
+							<span class="savings">- ₹{{ getSavings(product) | number:'1.2-2' }}</span>
+						</ng-container>
+						<ng-template #noSavings>
+							<span class="no-savings">No savings</span>
+						</ng-template>
+					</td>
+					<td>
+						<ng-container *ngIf="getDiscountDisplay(product).length > 0; else noDiscounts">
+							<span *ngFor="let d of getDiscountDisplay(product)" class="discount-badge">{{ d }}</span>
+						</ng-container>
+						<ng-template #noDiscounts>
+							<span class="no-discounts">No discounts</span>
+						</ng-template>
+					</td>
+					<td class="actions-cell">
+						<button class="action-btn view-btn" (click)="goToDetails(product)" title="View">
+							<span class="material-icons">visibility</span>
+						</button>
+						<button class="action-btn edit-btn" (click)="goToEdit(product)" title="Edit">
+							<span class="material-icons">edit</span>
+						</button>
+						<button class="action-btn delete-btn" (click)="deleteProduct(product)" title="Delete">
+							<span class="material-icons">delete</span>
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="pagination-bar">
+			<span>Showing {{ pageIndex * pageSize + 1 }} to {{ Math.min((pageIndex + 1) * pageSize, total) }} of {{ total }} products</span>
+			<button class="page-btn" [disabled]="pageIndex === 0" (click)="onPage({ pageIndex: 0, pageSize: pageSize, length: total })">First</button>
+			<button class="page-btn" [disabled]="pageIndex === 0" (click)="onPage({ pageIndex: pageIndex - 1, pageSize: pageSize, length: total })">Previous</button>
+			<ng-container *ngFor="let i of [].constructor(Math.ceil(total / pageSize)); let idx = index">
+				<button class="page-btn" [class.active]="pageIndex === idx" (click)="onPage({ pageIndex: idx, pageSize: pageSize, length: total })">{{ idx + 1 }}</button>
+			</ng-container>
+			<button class="page-btn" [disabled]="pageIndex === Math.ceil(total / pageSize) - 1" (click)="onPage({ pageIndex: pageIndex + 1, pageSize: pageSize, length: total })">Next</button>
+			<button class="page-btn" [disabled]="pageIndex === Math.ceil(total / pageSize) - 1" (click)="onPage({ pageIndex: Math.ceil(total / pageSize) - 1, pageSize: pageSize, length: total })">Last</button>
+		</div>
+	</div>
+
+	<ng-template #loadingTpl>
+		<div class="loading-spinner">
+			<span class="material-icons spinner">autorenew</span>
+			<span>Loading products...</span>
+		</div>
+	</ng-template>
+
+	<!-- Delete Confirmation Modal -->
+	<div class="modal-overlay" *ngIf="showDeleteModal" (click)="cancelDelete()">
+		<div class="modal-content" (click)="$event.stopPropagation()">
+			<div class="modal-header">
+				<h2>Delete Product</h2>
+				<button class="close-btn" (click)="cancelDelete()">
+					<span class="material-icons">close</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p>Are you sure you want to delete <strong>{{ productToDelete?.name }}</strong>?</p>
+				<p class="warning-text">This action cannot be undone.</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+				<button class="btn-delete" (click)="confirmDelete()" [disabled]="isDeleting">
+					<span *ngIf="!isDeleting">Delete Product</span>
+					<span *ngIf="isDeleting" class="spinner-small">
+						<span class="material-icons">autorenew</span>
+						Deleting...
+					</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Success Toast -->
+	<div class="success-toast" *ngIf="showSuccessMessage">
+		{{ successMessage }}
+	</div>
+</div>
