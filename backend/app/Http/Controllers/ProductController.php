@@ -6,50 +6,55 @@ use App\Models\Product;
 use App\Models\Discount;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\Collection;
 
 class ProductController extends Controller
 {
+    /**
+     * Database columns that can be sorted at database level
+     */
+    private array $databaseColumns = ['id', 'name', 'description', 'price', 'created_at', 'updated_at'];
+
+    /**
+     * Calculated fields that must be sorted in PHP
+     */
+    private array $calculatedFields = ['final_price', 'savings', 'original_price'];
+
     /**
      * List all products with pagination, search, and sorting.
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Product::with('discounts');
+        // Apply search filter
+        $query = $this->applySearchFilter(Product::with('discounts'), $request);
 
-        // Search by name or description
-        if ($request->has('search')) {
-            $search = $request->query('search');
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+        // Get sort parameters
+        $sortParams = $this->getSortParameters($request);
+
+        // Apply database-level sorting
+        if ($this->isDbColumn($sortParams['sortBy'])) {
+            $query = $this->applyDatabaseSort($query, $sortParams);
         }
 
-        // Sorting
-        $sortBy = $request->query('sort_by', 'name');
-        $sortOrder = $request->query('sort_order', 'asc');
-        $query->orderBy($sortBy, $sortOrder);
+        // Get all matching products
+        $allProducts = $query->get();
 
-        // Pagination
-        $perPage = $request->query('per_page', 10);
-        $products = $query->paginate($perPage);
+        // Enrich products with calculated fields
+        $allProducts = $this->enrichProductsWithCalculations($allProducts);
 
-        // Calculate final prices and savings
-        $products->getCollection()->transform(function ($product) {
-            $product->final_price = $this->calculateFinalPrice($product);
-            $product->savings = $product->price - $product->final_price;
-            return $product;
-        });
+        // Apply in-memory sorting for calculated fields
+        if ($this->isCalculatedField($sortParams['sortBy']) && $sortParams['sortBy'] !== 'original_price') {
+            $allProducts = $this->applySortToCalculatedField($allProducts, $sortParams);
+        }
+
+        // Apply pagination 
+        $paginationParams = $this->getPaginationParameters($request);
+        $paginatedResult = $this->applyPagination($allProducts, $paginationParams);
 
         return response()->json([
             'success' => true,
-            'data' => $products->items(),
-            'pagination' => [
-                'total' => $products->total(),
-                'per_page' => $products->perPage(),
-                'current_page' => $products->currentPage(),
-                'last_page' => $products->lastPage(),
-                'from' => $products->firstItem(),
-                'to' => $products->lastItem(),
-            ]
+            'data' => $paginatedResult['products'],
+            'pagination' => $paginatedResult['pagination']
         ]);
     }
 
@@ -59,9 +64,7 @@ class ProductController extends Controller
     public function show($id): JsonResponse
     {
         $product = Product::with('discounts')->findOrFail($id);
-
-        $product->final_price = $this->calculateFinalPrice($product);
-        $product->savings = $product->price - $product->final_price;
+        $product = $this->enrichProductWithCalculations($product);
 
         return response()->json([
             'success' => true,
@@ -84,14 +87,12 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
-        // Attach discounts if provided
         if (!empty($validated['discounts'])) {
             $product->discounts()->attach($validated['discounts']);
         }
 
         $product->load('discounts');
-        $product->final_price = $this->calculateFinalPrice($product);
-        $product->savings = $product->price - $product->final_price;
+        $product = $this->enrichProductWithCalculations($product);
 
         return response()->json([
             'success' => true,
@@ -117,14 +118,12 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        // Update discounts if provided
         if (isset($validated['discounts'])) {
             $product->discounts()->sync($validated['discounts']);
         }
 
         $product->load('discounts');
-        $product->final_price = $this->calculateFinalPrice($product);
-        $product->savings = $product->price - $product->final_price;
+        $product = $this->enrichProductWithCalculations($product);
 
         return response()->json([
             'success' => true,
@@ -148,6 +147,150 @@ class ProductController extends Controller
     }
 
     /**
+     * Apply search filter to the query
+     */
+    private function applySearchFilter($query, Request $request)
+    {
+        if ($request->has('search')) {
+            $search = $request->query('search');
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+        }
+        return $query;
+    }
+
+    /**
+     * Get and validate sort parameters from request
+     */
+    private function getSortParameters(Request $request): array
+    {
+        $sortBy = $request->query('sort_by', 'name');
+        $sortOrder = strtolower($request->query('sort_order', 'asc'));
+
+        // Validate sort order
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'asc';
+        }
+
+        // Validate sort field
+        if (!in_array($sortBy, array_merge($this->databaseColumns, $this->calculatedFields))) {
+            $sortBy = 'name';
+        }
+
+        return [
+            'sortBy' => $sortBy,
+            'sortOrder' => $sortOrder
+        ];
+    }
+
+    /**
+     * Apply database-level sorting to query
+     */
+    private function applyDatabaseSort($query, array $sortParams)
+    {
+        $sortBy = $sortParams['sortBy'];
+        $sortOrder = $sortParams['sortOrder'];
+
+        // Map 'original_price' to 'price' column
+        if ($sortBy === 'original_price') {
+            $sortBy = 'price';
+        }
+
+        return $query->orderBy($sortBy, $sortOrder);
+    }
+
+    /**
+     * Check if a field is a database column
+     */
+    private function isDbColumn(string $field): bool
+    {
+        return in_array($field, $this->databaseColumns);
+    }
+
+    /**
+     * Check if a field is a calculated field
+     */
+    private function isCalculatedField(string $field): bool
+    {
+        return in_array($field, $this->calculatedFields);
+    }
+
+    /**
+     * Enrich a single product with calculated values
+     */
+    private function enrichProductWithCalculations(Product $product): Product
+    {
+        $product->final_price = $this->calculateFinalPrice($product);
+        $product->savings = $product->price - $product->final_price;
+        return $product;
+    }
+
+    /**
+     * Enrich multiple products with calculated values
+     */
+    private function enrichProductsWithCalculations(Collection $products): Collection
+    {
+        return $products->map(function ($product) {
+            return $this->enrichProductWithCalculations($product);
+        });
+    }
+
+    /**
+     * Apply sorting to calculated field in memory
+     */
+    private function applySortToCalculatedField(Collection $products, array $sortParams): Collection
+    {
+        $sortBy = $sortParams['sortBy'];
+        $sortOrder = $sortParams['sortOrder'];
+        $isDescending = $sortOrder === 'desc';
+
+        return $products->sortBy(function ($product) use ($sortBy) {
+            return $product->{$sortBy};
+        }, SORT_REGULAR, $isDescending);
+    }
+
+    /**
+     * Get pagination parameters from request
+     */
+    private function getPaginationParameters(Request $request): array
+    {
+        return [
+            'perPage' => (int) $request->query('per_page', 10),
+            'page' => (int) $request->query('page', 1)
+        ];
+    }
+
+    /**
+     * Apply pagination to collection and return formatted result
+     */
+    private function applyPagination(Collection $products, array $params): array
+    {
+        $perPage = $params['perPage'];
+        $page = $params['page'];
+        $total = $products->count();
+
+        // Calculate pagination info
+        $lastPage = ceil($total / $perPage);
+        $from = ($page - 1) * $perPage + 1;
+        $to = min($page * $perPage, $total);
+
+        // Slice the collection for current page
+        $paginatedProducts = $products->slice(($page - 1) * $perPage, $perPage)->values();
+
+        return [
+            'products' => $paginatedProducts,
+            'pagination' => [
+                'total' => $total,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'last_page' => $lastPage,
+                'from' => $total === 0 ? 0 : $from,
+                'to' => $total === 0 ? 0 : $to,
+            ]
+        ];
+    }
+
+    /**
      * Calculate the final price after applying discounts.
      */
     private function calculateFinalPrice(Product $product): float
@@ -165,3 +308,4 @@ class ProductController extends Controller
         return max(0, round($finalPrice, 2));
     }
 }
+

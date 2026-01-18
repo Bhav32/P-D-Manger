@@ -71,11 +71,20 @@ class DiscountController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'type' => 'required|in:percentage,fixed',
-            'value' => 'required|numeric|min:0',
+            'value' => 'required|numeric|min:0|max:99999.99',
             'is_active' => 'boolean',
             'products' => 'nullable|array',
             'products.*' => 'integer|exists:products,id',
         ]);
+
+        // Additional validation: percentage discounts cannot exceed 100%
+        if ($validated['type'] === 'percentage' && $validated['value'] > 100) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Percentage discount cannot exceed 100%',
+                'errors' => ['value' => ['Percentage discount must be between 0 and 100']]
+            ], 422);
+        }
 
         // Default to active
         $validated['is_active'] = $validated['is_active'] ?? true;
@@ -106,11 +115,23 @@ class DiscountController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'type' => 'sometimes|in:percentage,fixed',
-            'value' => 'sometimes|numeric|min:0',
+            'value' => 'sometimes|numeric|min:0|max:99999.99',
             'is_active' => 'sometimes|boolean',
             'products' => 'nullable|array',
             'products.*' => 'integer|exists:products,id',
         ]);
+
+        // Additional validation: percentage discounts cannot exceed 100%
+        $type = $validated['type'] ?? $discount->type;
+        $value = $validated['value'] ?? $discount->value;
+        
+        if ($type === 'percentage' && $value > 100) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Percentage discount cannot exceed 100%',
+                'errors' => ['value' => ['Percentage discount must be between 0 and 100']]
+            ], 422);
+        }
 
         $discount->update($validated);
 

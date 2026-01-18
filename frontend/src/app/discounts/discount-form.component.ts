@@ -38,9 +38,36 @@ export class DiscountFormComponent implements OnInit {
     this.discountForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(255)]],
       type: ['percentage', Validators.required],
-      value: ['', [Validators.required, Validators.min(0)]],
+      value: ['', [Validators.required, Validators.min(0), Validators.max(99999.99)]],
       is_active: [true]
     });
+
+    // Add dynamic validator for percentage discounts
+    this.discountForm.get('type')?.valueChanges.subscribe(() => {
+      this.updateValueValidator();
+    });
+  }
+
+  private updateValueValidator() {
+    const typeControl = this.discountForm.get('type');
+    const valueControl = this.discountForm.get('value');
+
+    if (typeControl && valueControl) {
+      // Clear existing validators
+      valueControl.setValidators([Validators.required, Validators.min(0), Validators.max(99999.99)]);
+
+      // Add percentage-specific validator
+      if (typeControl.value === 'percentage') {
+        valueControl.setValidators([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(100)
+        ]);
+      }
+
+      // Trigger validation update
+      valueControl.updateValueAndValidity();
+    }
   }
 
   private checkEditMode() {
@@ -95,6 +122,14 @@ export class DiscountFormComponent implements OnInit {
     }
     if (control?.hasError('min')) {
       return `Value must be at least ${control.getError('min').min}`;
+    }
+    if (control?.hasError('max')) {
+      const maxValue = control.getError('max').max;
+      const typeControl = this.discountForm.get('type');
+      if (typeControl?.value === 'percentage') {
+        return `Percentage discount cannot exceed 100%`;
+      }
+      return `Value cannot exceed ${maxValue}`;
     }
     return 'Invalid input';
   }

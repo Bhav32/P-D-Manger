@@ -34,11 +34,31 @@
 		<table class="product-table">
 			<thead>
 				<tr>
-					<th>Name</th>
+					<th class="sortable" (click)="onSortFieldChange('name')" [class.sorted]="sortField === 'name'">
+						Name
+						<span class="sort-icon" *ngIf="sortField === 'name'">
+							{{ sortDirection === 'asc' ? '▲' : '▼' }}
+						</span>
+					</th>
 					<th>Description</th>
-					<th>Original Price</th>
-					<th>Final Price</th>
-					<th>Savings</th>
+					<th class="sortable" (click)="onSortFieldChange('price')" [class.sorted]="sortField === 'price'">
+						Original Price
+						<span class="sort-icon" *ngIf="sortField === 'original_price'">
+							{{ sortDirection === 'asc' ? '▲' : '▼' }}
+						</span>
+					</th>
+					<th class="sortable" (click)="onSortFieldChange('final_price')" [class.sorted]="sortField === 'final_price'">
+						Final Price
+						<span class="sort-icon" *ngIf="sortField === 'final_price'">
+							{{ sortDirection === 'asc' ? '▲' : '▼' }}
+						</span>
+					</th>
+					<th class="sortable" (click)="onSortFieldChange('savings')" [class.sorted]="sortField === 'savings'">
+						Savings
+						<span class="sort-icon" *ngIf="sortField === 'savings'">
+							{{ sortDirection === 'asc' ? '▲' : '▼' }}
+						</span>
+					</th>
 					<th>Discounts</th>
 					<th>Actions</th>
 				</tr>
@@ -49,7 +69,7 @@
 					<td>{{ product.description }}</td>
 					<td><span class="original-price">₹{{ product.price | number:'1.2-2' }}</span></td>
 					<td><span class="final-price">₹{{ getFinalPrice(product) | number:'1.2-2' }}</span></td>
-					<td>
+					<td class="savings_column">
 						<ng-container *ngIf="getSavings(product) !== null; else noSavings">
 							<span class="savings">- ₹{{ getSavings(product) | number:'1.2-2' }}</span>
 						</ng-container>

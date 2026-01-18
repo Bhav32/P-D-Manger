@@ -153,6 +153,34 @@
 	padding: 1rem 0.7rem;
 	text-align: left;
 	font-size: 1.08rem;
+	width: auto;
+
+	&.sortable {
+		cursor: pointer;
+		user-select: none;
+		transition: background-color 0.2s;
+		position: relative;
+		padding-right: 1.5rem;
+
+		&:hover {
+			background-color: #eff2f7;
+		}
+
+		&.sorted {
+			background-color: #e8d5ff;
+			color: #7b2ff2;
+		}
+
+		.sort-icon {
+			position: absolute;
+			right: 0.5rem;
+			top: 50%;
+			transform: translateY(-50%);
+			font-size: 0.7rem;
+			color: #7b2ff2;
+			font-weight: 700;
+		}
+	}
 }
 .product-table td {
 	padding: 1rem 0.7rem;
@@ -168,6 +196,9 @@
 	color: #2e7d32;
 	font-weight: 600;
 	font-size: 1.1rem;
+}
+.savings_column {
+	width: 8%;
 }
 .savings {
 	color: #c62828;

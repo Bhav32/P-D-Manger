@@ -96,34 +96,39 @@
 								</button>
 							</div>
 
-							<div class="form-row">
+					<div class="form-row">
 								<div class="form-group">
-									<label>Discount ID</label>
-									<input 
-										type="number" 
+									<label>Discount Name</label>
+									<select 
 										formControlName="id"
-										placeholder="Select or enter discount ID"
 										class="form-input"
-									/>
+									>
+										<option value="">-- Select a Discount --</option>
+										<option *ngFor="let discount of availableDiscounts" [value]="discount.id">
+											{{ discount.title }}
+										</option>
+									</select>
 								</div>
 
 								<div class="form-group">
 									<label>Type</label>
-									<select formControlName="type" class="form-input">
-										<option value="">Select type</option>
-										<option value="percentage">Percentage</option>
-										<option value="fixed">Fixed Amount</option>
-									</select>
+									<input 
+										type="text" 
+										formControlName="type"
+										class="form-input"
+										readonly
+										placeholder="Type (auto-filled)"
+									/>
 								</div>
 
 								<div class="form-group">
 									<label>Value</label>
 									<input 
-										type="number" 
+										type="text" 
 										formControlName="value"
-										placeholder="0.00"
-										step="0.01"
 										class="form-input"
+										readonly
+										placeholder="Value (auto-filled)"
 									/>
 								</div>
 							</div>

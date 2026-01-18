@@ -55,7 +55,7 @@ export class ProductListComponent implements OnInit {
 
   sortOptions = [
     { value: 'name', label: 'Name' },
-    { value: 'price', label: 'Original Price' },
+    { value: 'original_price', label: 'Original Price' },
     { value: 'final_price', label: 'Final Price' },
     { value: 'savings', label: 'Savings' }
   ];
@@ -93,7 +93,15 @@ export class ProductListComponent implements OnInit {
   }
 
   onSortFieldChange(field: string) {
-    this.sortField = field;
+    // If clicking the same field, toggle direction
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      // If clicking a new field, default to ascending
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.pageIndex = 0; // Reset to first page
     this.fetchProducts();
   }
 

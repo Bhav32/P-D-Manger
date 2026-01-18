@@ -65,8 +65,4 @@ export class ProductService {
   deleteProduct(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
-
-  getProductDiscounts(productId: number): Observable<any> {
-    return this.http.get(`${API_CONFIG.baseUrl}/api/products/${productId}/discounts`);
-  }
 }

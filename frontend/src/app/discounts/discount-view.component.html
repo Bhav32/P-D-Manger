@@ -1,0 +1,99 @@
+<div class="discount-view-container">
+  <div class="header-section">
+    <button class="back-btn" (click)="goBack()">
+      <span class="material-icons">arrow_back</span>
+      Back to Discounts
+    </button>
+    <button class="edit-btn" *ngIf="discount" (click)="goToEdit(discount.id)">
+      <span class="material-icons">edit</span>
+      Edit Discount
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">
+    <span class="material-icons spinner">autorenew</span>
+    <span>Loading discount details...</span>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <span class="material-icons">error_outline</span>
+    {{ error }}
+  </div>
+
+  <div *ngIf="discount && !loading" class="discount-details-card">
+    <div class="discount-header">
+      <h1>{{ discount.title }}</h1>
+      <p class="discount-id">Discount ID: #{{ discount.id }}</p>
+    </div>
+
+    <div class="details-grid">
+      <div class="value-section">
+        <div class="value-card">
+          <div class="discount-badge" [class.percentage]="discount.type === 'percentage'" [class.fixed]="discount.type === 'fixed'">
+            <div class="value-display">
+              <span class="value">{{ formatDiscountValue(discount.value) }}</span>
+              <span class="unit" *ngIf="discount.type === 'percentage'">%</span>
+              <span class="unit" *ngIf="discount.type === 'fixed'">₹</span>
+            </div>
+            <div class="type-label">
+              <span *ngIf="discount.type === 'percentage'" class="type-badge percentage-type">Percentage Discount</span>
+              <span *ngIf="discount.type === 'fixed'" class="type-badge fixed-type">Fixed Amount Discount</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-section">
+        <div class="status-card">
+          <h3>Status</h3>
+          <div class="status-badge" [class.active]="discount.is_active" [class.inactive]="!discount.is_active">
+            <span class="material-icons">{{ discount.is_active ? 'check_circle' : 'cancel' }}</span>
+            <span>{{ discount.is_active ? 'Active' : 'Inactive' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-section">
+        <h3>Details</h3>
+        <div class="meta-items">
+          <div class="meta-item">
+            <label>Type</label>
+            <span class="type-display">{{ discount.type === 'percentage' ? 'Percentage' : 'Fixed Amount' }}</span>
+          </div>
+          <div class="meta-item">
+            <label>Value</label>
+            <span class="value-display">
+              <span *ngIf="discount.type === 'percentage'">{{ discount.value }}%</span>
+              <span *ngIf="discount.type === 'fixed'">₹{{ formatDiscountValue(discount.value) }}</span>
+            </span>
+          </div>
+          <div class="meta-item">
+            <label>Created At</label>
+            <span>{{ discount.created_at | date:'medium' }}</span>
+          </div>
+          <div class="meta-item" *ngIf="discount.updated_at">
+            <label>Updated At</label>
+            <span>{{ discount.updated_at | date:'medium' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="products-section" *ngIf="discount.products && discount.products.length > 0">
+        <h3>Associated Products</h3>
+        <div class="products-list">
+          <div *ngFor="let product of discount.products" class="product-item">
+            <span class="product-name">{{ product.name }}</span>
+            <span class="product-price">₹{{ product.price | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="products-section" *ngIf="!discount.products || discount.products.length === 0">
+        <div class="no-products">
+          <span class="material-icons">info</span>
+          <p>No products are associated with this discount yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

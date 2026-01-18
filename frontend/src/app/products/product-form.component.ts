@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService, Product } from '../services/product.service';
+import { DiscountService, Discount } from '../services/discount.service';
 
 @Component({
   selector: 'app-product-form',
@@ -14,6 +15,7 @@ import { ProductService, Product } from '../services/product.service';
 export class ProductFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private productService = inject(ProductService);
+  private discountService = inject(DiscountService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -23,10 +25,28 @@ export class ProductFormComponent implements OnInit {
   showSuccessMessage = false;
   successMessage = '';
   productId: number | null = null;
+  availableDiscounts: Discount[] = [];
+  discountMap: { [key: number]: Discount } = {};
 
   ngOnInit() {
     this.initializeForm();
+    this.loadAvailableDiscounts();
     this.checkEditMode();
+  }
+
+  private loadAvailableDiscounts() {
+    this.discountService.getDiscounts({ per_page: 100 }).subscribe({
+      next: (response) => {
+        this.availableDiscounts = response.data || [];
+        // Create a map for easy lookup
+        this.availableDiscounts.forEach(discount => {
+          this.discountMap[discount.id] = discount;
+        });
+      },
+      error: (error) => {
+        console.error('Error loading discounts:', error);
+      }
+    });
   }
 
   private initializeForm() {
@@ -94,11 +114,26 @@ export class ProductFormComponent implements OnInit {
   }
 
   private createDiscountFormGroup(discount?: any): FormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       id: [discount?.id || '', Validators.required],
       type: [discount?.type || '', Validators.required],
       value: [discount?.value || '', [Validators.required, Validators.min(0)]]
     });
+
+    // Listen to id changes and auto-fill type and value
+    group.get('id')?.valueChanges.subscribe((discountId) => {
+      if (discountId) {
+        const selectedDiscount = this.discountMap[discountId];
+        if (selectedDiscount) {
+          group.patchValue({
+            type: selectedDiscount.type,
+            value: selectedDiscount.value
+          });
+        }
+      }
+    });
+
+    return group;
   }
 
   addDiscount() {
@@ -107,6 +142,11 @@ export class ProductFormComponent implements OnInit {
 
   removeDiscount(index: number) {
     this.discounts.removeAt(index);
+  }
+
+  getDiscountName(discountId: number): string {
+    const discount = this.discountMap[discountId];
+    return discount ? discount.title : 'Unknown Discount';
   }
 
   private updateFinalPrice() {
@@ -163,11 +203,17 @@ export class ProductFormComponent implements OnInit {
     }
 
     this.isSubmitting = true;
+    
+    // Extract only discount IDs for the API request
+    const discountIds = this.discounts.value
+      .map((d: any) => d.id)
+      .filter((id: any) => id); // Filter out empty values
+
     const formData = {
       name: this.productForm.get('name')?.value,
       description: this.productForm.get('description')?.value,
       price: this.productForm.get('price')?.value,
-      discounts: this.discounts.value
+      discounts: discountIds
     };
 
     const request = this.isEditMode && this.productId

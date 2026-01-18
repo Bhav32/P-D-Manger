@@ -13,7 +13,7 @@ export const routes: Routes = [
       { path: '', loadComponent: () => import('./products/product-list.component').then(m => m.ProductListComponent) },
       { path: 'create', loadComponent: () => import('./products/product-form.component').then(m => m.ProductFormComponent) },
       { path: 'edit/:id', loadComponent: () => import('./products/product-form.component').then(m => m.ProductFormComponent) },
-      { path: ':id', loadComponent: () => import('./products/product-list.component').then(m => m.ProductListComponent) } // Optional: single product view
+      { path: ':id', loadComponent: () => import('./products/product-view.component').then(m => m.ProductViewComponent) }
     ]
   },
   {
@@ -23,7 +23,7 @@ export const routes: Routes = [
       { path: '', loadComponent: () => import('./discounts/discount-list.component').then(m => m.DiscountListComponent) },
       { path: 'create', loadComponent: () => import('./discounts/discount-form.component').then(m => m.DiscountFormComponent) },
       { path: 'edit/:id', loadComponent: () => import('./discounts/discount-form.component').then(m => m.DiscountFormComponent) },
-      { path: ':id', loadComponent: () => import('./discounts/discount-list.component').then(m => m.DiscountListComponent) } // Optional: single discount view
+      { path: ':id', loadComponent: () => import('./discounts/discount-view.component').then(m => m.DiscountViewComponent) }
     ]
   },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
