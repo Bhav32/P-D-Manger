@@ -177,11 +177,10 @@ CORS_ALLOWED_ORIGINS=http://localhost:4200,http://localhost:3000
 
 ### Frontend Configuration
 
-The frontend API URL is configured in:
-- `src/environments/environment.ts` (Development)
-- `src/environments/environment.prod.ts` (Production)
+The Backend API URL is configured in:
+- `src/app/config/api_config.ts` 
 
-Default API URL: `http://localhost:8000/api`
+Default API URL: `http://127.0.0.1:8000/api`
 
 ---
 

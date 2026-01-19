@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  baseUrl: 'http://127.0.0.1:8003/api',
+  baseUrl: 'http://127.0.0.1:8000/api',
   endpoints: {
     auth: {
       login: '/auth/login',
@@ -19,8 +19,6 @@ export const API_CONFIG = {
       create: '/discounts',
       edit: '/discounts/:id',
       delete: '/discounts/:id',
-      active: '/discounts/active',
-      forProduct: '/products/:productId/discounts'
     }
   }
 };
