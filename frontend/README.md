@@ -2,6 +2,16 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.19.
 
+## Installation
+
+Before running the development server, ensure the backend API base URL is configured correctly. Update the backend API base URL to match your environment:
+
+```
+http://127.0.0.1:8003/api
+```
+
+Make sure to set this URL in your service configuration files based on where your backend API is running.
+
 ## Development server
 
 To start a local development server, run:
