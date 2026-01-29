@@ -24,14 +24,14 @@ Route::group([
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user', [AuthController::class, 'user']);
 });
 
 // Protected routes
 Route::middleware('auth:api')->group(function () {
     // Products API
     Route::apiResource('products', ProductController::class);
-    
+    // Logged In User Info
+    Route::get('user', [AuthController::class, 'user']);
     // Discounts API
     Route::apiResource('discounts', DiscountController::class);
 });

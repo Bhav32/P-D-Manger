@@ -54,7 +54,7 @@ export class AuthService {
   }
 
   getMe(): Observable<any> {
-    return this.http.get(`${API_CONFIG.baseUrl}/auth/user`);
+    return this.http.get(`${API_CONFIG.baseUrl}/user`);
   }
 
   refresh(): Observable<AuthResponse> {
